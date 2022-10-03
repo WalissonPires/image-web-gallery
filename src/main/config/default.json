@@ -1,0 +1,6 @@
+{
+    "googleApi": {
+        "cse": "{{GOOGLE_API_CSE}}",
+        "apiKey": "{{GOOGLE_API_KEY}}"
+    }
+}

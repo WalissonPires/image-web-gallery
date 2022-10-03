@@ -1,0 +1,16 @@
+:root {
+    --blue: #0077fe;
+    --green: rgb(68, 169, 68);
+    --red: rgb(221, 78, 78);
+
+    --text-muted: #666;
+    --text-normal: #444;
+    --text-normal-inverted: #fff;
+}
+
+.theme-dark :root {
+
+    --text-muted: #ddd;
+    --text-normal: #fff;
+    --text-normal-inverted: #444;
+}
