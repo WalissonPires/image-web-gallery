@@ -1,61 +1,68 @@
+import { PrismaClient, Photo as PhotoDb } from "@prisma/client";
 import { Photo } from "../../domain/entities/photo";
 import { GetPhotosInput, GetPhotosResult, IPhotoRepository } from "../../domain/common/repositories/photos-repository";
+import { ServicesName, ServicesType } from "../ioc/types";
 
+
+export type PhotosRepositoryOptions = Pick<ServicesType, ServicesName.prismaClient>;
 
 export class PhotosRepository implements IPhotoRepository {
 
-    public addPhotos(photos: Photo[]): Promise<Photo[]> {
+    private readonly _prismaClient: PrismaClient;
 
-        photos.forEach(photo => PhotosRepository._data.push(photo));
-        return Promise.resolve(photos);
+    public constructor({ prismaClient }: PhotosRepositoryOptions) {
+
+        this._prismaClient = prismaClient;
     }
 
-    public getPhotos(input: GetPhotosInput): Promise<GetPhotosResult> {
+    public async addPhotos(photos: Photo[]): Promise<Photo[]> {
 
-        const result: Photo[] = [];
-        let count = 0;
+        const photosDb = await this._prismaClient.$transaction(photos.map(photo => this._prismaClient.photo.create({
+            data: {
+                id: photo.id,
+                name: photo.name,
+                url: photo.imageUrl
+            }
+        })));
 
-        for(let i = input.offset; count < input.limit && i < PhotosRepository._data.length; i++) {
-            result.push(PhotosRepository._data[i]);
-            count++;
-        }
-
-        return Promise.resolve(new GetPhotosResult(PhotosRepository._data.length, result));
+        return photosDb.map(photoDb => this.mapPhotoDb(photoDb));
     }
 
-    public deletePhotos(photosId: string[]): Promise<void> {
+    public async getPhotos(input: GetPhotosInput): Promise<GetPhotosResult> {
 
-        for(const photoId of photosId) {
+        const count = await this._prismaClient.photo.count();
 
-            const photoIndex = PhotosRepository._data.findIndex(x => x.id === photoId);
-            if (photoIndex >= 0)
-                PhotosRepository._data.splice(photoIndex, 1);
-        }
+        const photosDb = await this._prismaClient.photo.findMany({
+            skip: input.offset,
+            take: input.limit,
+            orderBy: {
+                createAt: 'asc'
+            }
+        });
 
-        return Promise.resolve();
+        return new GetPhotosResult(count, photosDb.map(photoDb => this.mapPhotoDb(photoDb)));
+    }
+
+    public async deletePhotos(photosId: string[]): Promise<void> {
+
+        await this._prismaClient.photo.deleteMany({
+            where: {
+                id: {
+                    in: photosId
+                }
+            }
+        });
     }
 
 
+    private mapPhotoDb(photoDb: PhotoDb): Photo {
 
-    private static _data: Photo[] =  [{
-        id: '1',
-        name: 'Rin Tosaka',
-        imageUrl: 'https://static.anime21.blog.br/2014/11/Fate-Stay-Night-Unlimited-Blade-Works-5.mkv_20141111_024758.991-1200x900-cropped.png'
-    }, {
-        id: '2',
-        name: 'Saber',
-        imageUrl: 'https://www.itl.cat/pngfile/big/308-3085801_fate-saber.png'
-    }, {
-        id: '3',
-        name: 'Saber 2',
-        imageUrl: 'https://i.pinimg.com/originals/9d/56/5f/9d565f16b04f85366704c96c48405277.jpg'
-    }, {
-        id: '4',
-        name: 'Fate',
-        imageUrl: 'https://p4.wallpaperbetter.com/wallpaper/454/101/77/fate-series-fgo-fate-stay-night-fate-stay-night-heaven-s-feel-anime-girls-hd-wallpaper-preview.jpg'
-    }, {
-        id: '5',
-        name: 'Saber 3',
-        imageUrl: 'https://wallpaperaccess.com/full/8051826.jpg'
-    }];
+        const photo: Photo = {
+            id: photoDb.id,
+            name: photoDb.name,
+            imageUrl: photoDb.url
+        };
+
+        return photo;
+    }
 }

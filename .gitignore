@@ -89,3 +89,5 @@ typings/
 out/
 
 src/main/config/development.json
+dev-db.sqlite
+dev-db.sqlite-journal

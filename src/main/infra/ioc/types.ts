@@ -1,3 +1,4 @@
+import { PrismaClient } from "@prisma/client";
 import { IPhotoRepository } from "../../domain/common/repositories/photos-repository"
 
 import { ICryptoService } from "../../domain/common/security/crypto-service";
@@ -12,6 +13,8 @@ import { DeletePhotos } from "../../domain/use-cases/gallery/delete-photos";
 
 
 export enum ServicesName {
+
+    prismaClient = "prismaClient",
     photoRepository = "photoRepository",
 
     cryptoService = "cryptoService",
@@ -25,6 +28,8 @@ export enum ServicesName {
 }
 
 export type ServicesType = {
+
+    [ServicesName.prismaClient]: PrismaClient;
     [ServicesName.photoRepository]: IPhotoRepository;
 
     [ServicesName.cryptoService]: ICryptoService;
