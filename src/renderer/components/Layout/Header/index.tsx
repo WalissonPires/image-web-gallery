@@ -22,7 +22,7 @@ Header.LeftCommon = () => {
 
     return (
     <Left>
-        <small>wpFotos</small>
+        {/* <small>wpFotos</small> */}
     </Left>);
 }
 

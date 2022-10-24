@@ -4,7 +4,7 @@ import { toast, ToastOptions } from "react-toastify";
 export abstract class Notify {
 
     private static _defaultConfig: ToastOptions = {
-        position: "bottom-center",
+        position: "bottom-right",
         hideProgressBar: true,
         theme: 'dark'
     };

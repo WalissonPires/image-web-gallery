@@ -1,5 +1,5 @@
 import React from "react";
-import { Check, Eye, X } from "react-feather";
+import { Check, RefreshCcw, X } from "react-feather";
 import { useNavigate } from "react-router-dom";
 
 import { useSearchImages } from "./hooks/use-search-images";
@@ -9,7 +9,7 @@ import { LoadButtonWrapper } from "./styles";
 import { Container } from "../../components/Layout/Container";
 import { Header } from "../../components/Layout/Header";
 import { Body } from "../../components/Layout/Body";
-import { EmptyContent } from "../../components/Layout/EmptyContent";
+import { EmptyContent, EmptyContentMessage, EmptyContentTitle } from "../../components/Layout/EmptyContent";
 
 import { IconButton } from "../../components/IconButton";
 import { PhotoData, Photos } from "../../components/Photos";
@@ -72,12 +72,16 @@ export const Search = () => {
                 <Header.LeftCommon />
                 <Header.Center>
                     <Wrapper horizontalCenter verticalCenter w100 style={{ padding: '0 20px' }}>
-                        <Input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} autoFocus placeholder="Que imagem você está procurando?" border />
+                        <Input
+                            value={searchTerm}
+                            autoFocus
+                            border
+                            onChange={e => setSearchTerm(e.target.value)}
+                            placeholder="Que imagem você está procurando?"
+                            icon={<X onClick={() => navigate(-1)}></X>}
+                            />
                     </Wrapper>
                 </Header.Center>
-                <Header.Right>
-                    <IconButton onClick={() => navigate(-1)} slim title="Fechar pesquisa"><X /></IconButton>
-                </Header.Right>
             </Header>
             <Body>
                 { currentPhotoId && <Viewer photos={photos} currentPhotoId={currentPhotoId} onCloseClick={handleCloseViewer} onPreviousClick={handlePreviousPhoto} onNextClick={handleNextPhoto} />}
@@ -86,10 +90,14 @@ export const Search = () => {
                     onItemlick={photo => handleShowViewer(photo.id)}
                     renderActions={renderePhotoActions} />}
                 <LoadButtonWrapper>
-                    { !isLoading && photos.length > 0 && <IconButton onClick={() => getNextPage()}><Eye style={{ marginRight: "5px" }} /> Carreger mais</IconButton>}
+                    { !isLoading && photos.length > 0 && <IconButton onClick={() => getNextPage()}><RefreshCcw style={{ marginRight: "5px" }} /> Carreger mais</IconButton>}
                     { isLoading && <Spinner /> }
                 </LoadButtonWrapper>
-                { !isLoading && photos.length === 0 && <EmptyContent>Encontre na web imagens do tema que você procura e salve na sua galeria.</EmptyContent>}
+                { !isLoading && photos.length === 0 &&
+                <EmptyContent>
+                        <EmptyContentTitle>Começe a construção da sua galeria</EmptyContentTitle>
+                        <EmptyContentMessage>Procure imagens na web sobre seu tema favorito e salve na sua galeria. <br/><b>E o melhor: Sem ocupar espaço do seu disco.</b></EmptyContentMessage>
+                </EmptyContent>}
             </Body>
         </Container>
     );

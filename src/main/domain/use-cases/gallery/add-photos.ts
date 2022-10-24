@@ -17,6 +17,18 @@ export class AddPhotos implements UseCase<AddPhotosInput, AddPhotosResult> {
 
     public async execute(input: AddPhotosInput): Promise<AddPhotosResult> {
 
+        let index = 0;
+        while (index < input.photos.length) {
+
+            const photo = input.photos[index];
+
+            const photoExisting = await this._photoRepository.getPhotoById(photo.id);
+            if (photoExisting)
+                input.photos.splice(index, 1);
+            else
+                index++;
+        }
+
         const photosAdded = await this._photoRepository.addPhotos(input.photos);
         return new AddPhotosResult(photosAdded);
     }

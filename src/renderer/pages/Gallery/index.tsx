@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckSquare, Eye, Search, Square, Trash2, X } from "react-feather";
+import { CheckSquare, RefreshCcw, Search, Square, Trash2, X } from "react-feather";
 
 import { Container } from "../../components/Layout/Container";
 import { Header } from "../../components/Layout/Header";
@@ -10,12 +10,13 @@ import { usePhotos } from "./hooks/use-photos";
 import { useViewer } from "../../hooks/use-viewer";
 import { LoadButtonWrapper } from "./styles";
 
+import { Input } from "../../components/Input";
 import { IconButton } from "../../components/IconButton";
 import { PhotoData, Photos } from "../../components/Photos";
 import { Viewer } from "../../components/Viewer";
 import { SelectionBar } from "../../components/SelectionBar";
 import { Spinner } from "../../components/Spinner";
-import { EmptyContent } from "../../components/Layout/EmptyContent";
+import { EmptyContent, EmptyContentMessage, EmptyContentTitle } from "../../components/Layout/EmptyContent";
 import { useConfirmModal } from "../../components/ConfirmModal/hooks/use-confirm-modal";
 
 import { PagesUrls } from "../pages-urls";
@@ -122,7 +123,11 @@ export const Gallery = () => {
                 <Header.LeftCommon />
                 <Header.CenterCommon />
                 <Header.Right>
-                    <Search onClick={handleGoToSeatch} style={{ cursor: 'pointer' }} />
+                    <div onClick={handleGoToSeatch}>
+                        <Input
+                            placeholder="Procurar imagem"
+                            icon={ <Search />} />
+                    </div>
                 </Header.Right>
             </Header>
             <Body>
@@ -134,10 +139,16 @@ export const Gallery = () => {
                     onItemlick={photo => handleShowViewer(photo.id)} />
                 { currentPage < totalPages &&
                 <LoadButtonWrapper>
-                    { !isLoading && photos.length > 0 && <IconButton onClick={() => getNextPage()}><Eye style={{ marginRight: "5px" }} /> Carreger mais</IconButton> }
+                    { !isLoading && photos.length > 0 && <IconButton onClick={() => getNextPage()}><RefreshCcw style={{ marginRight: "5px" }} /> Carreger mais</IconButton> }
                     { isLoading && <Spinner /> }
                 </LoadButtonWrapper> }
-                { !isLoading && photos.length === 0 && <EmptyContent>Vamos começar sua jornada? Clique em <Search style={{ margin: "0 5px" }} /> no topo da tela para procurar imagens na internet e criar sua galeria.</EmptyContent>}
+                { !isLoading && photos.length === 0 &&
+                <EmptyContent>
+                        <EmptyContentTitle>Pronto para começa?</EmptyContentTitle>
+                        <EmptyContentMessage>
+                            Clique no campo de pesquisa no topo da tela para procurar imagens na internet e criar sua galeria.
+                        </EmptyContentMessage>
+                </EmptyContent>}
             </Body>
         </Container>
     );

@@ -2,6 +2,7 @@ import { Photo } from "../../entities/photo";
 
 
 export interface IPhotoRepository {
+    getPhotoById(id: string): Promise<Photo | null>;
     getPhotos(input: GetPhotosInput): Promise<GetPhotosResult>;
     addPhotos(photos: Photo[]): Promise<Photo[]>;
     deletePhotos(photosId: string[]): Promise<void>;

@@ -15,6 +15,15 @@ export class PhotosRepository implements IPhotoRepository {
         this._prismaClient = prismaClient;
     }
 
+    public async getPhotoById(id: string): Promise<Photo | null> {
+
+        const photoDb = await this._prismaClient.photo.findFirst({
+            where: { id: id },
+        });
+
+        return photoDb ? this.mapPhotoDb(photoDb) : null;
+    }
+
     public async addPhotos(photos: Photo[]): Promise<Photo[]> {
 
         const photosDb = await this._prismaClient.$transaction(photos.map(photo => this._prismaClient.photo.create({
